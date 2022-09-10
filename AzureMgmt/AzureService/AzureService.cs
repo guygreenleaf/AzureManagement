@@ -12,8 +12,7 @@ namespace AzureMgmt.AzureService
 #if DEBUG
         public AzureService(IConfiguration configuration)
         {
-
-            CONNECTION_STRING = configuration.GetConnectionString("Azure");
+            CONNECTION_STRING = File.ReadAllText(@"D:\Engineering\repos\AzureManagement\AzureMgmt\ConnString.txt");
 
             if (string.IsNullOrEmpty(CONNECTION_STRING)) throw new AccessViolationException("Connection string not found."); 
 
