@@ -10,7 +10,7 @@ namespace AzureMgmt.AzureService
         private readonly BlobContainerClient blobContainerClient;
 
 #if DEBUG
-        public AzureService(IConfiguration configuration)
+        public AzureService()
         {
             CONNECTION_STRING = File.ReadAllText(@"D:\Engineering\repos\AzureManagement\AzureMgmt\ConnString.txt");
 
@@ -24,7 +24,7 @@ namespace AzureMgmt.AzureService
 #else
         public AzureService()
         {
-            CONNECTION_STRING = Environment.GetEnvironmentVariable("CONNECTION_STRING"); 
+            CONNECTION_STRING = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? String.Empty; 
             if (string.IsNullOrEmpty(CONNECTION_STRING)) throw new AccessViolationException("Connection string not found."); 
 
             blobServiceClient = new BlobServiceClient(CONNECTION_STRING);
