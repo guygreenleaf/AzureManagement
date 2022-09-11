@@ -1,10 +1,13 @@
 using AzureMgmt.AzureService;
+using AzureMgmt.Util;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IAzureService, AzureService>();
-
+#if DEBUG
+builder.Services.AddScoped<IJSONUtils, JSONUtils>();
+#endif
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

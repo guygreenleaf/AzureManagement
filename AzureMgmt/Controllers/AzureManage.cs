@@ -14,23 +14,19 @@ namespace AzureMgmt.Controllers
             this.azureService = azureService;
         }
 
-        [HttpGet]
-        public async Task<string> GetContainerData()
+        [HttpGet("MostRecentResume")]
+        public IActionResult MostRecentResume()
         {
-            DateTimeOffset? lastModifiedFileTime = DateTime.MinValue;
-            string url = string.Empty;
-            var res = await azureService.GetBlobs();
-
-            foreach(var blob in res)
+            try
             {
-                if (blob.Properties.LastModified > lastModifiedFileTime)
-                {
-                    url = $"https://ggpf.blob.core.windows.net/publicfilesggreenleaf/{blob.Name}";
-                    lastModifiedFileTime = blob.Properties.LastModified;
-                }
+                var linkPostFix = azureService.GetMostRecentResume();
+                
+                return linkPostFix is not null ? Ok(linkPostFix) : NotFound("Resume Not Found");
             }
-
-            return url;
+            catch (Exception ex)
+            {
+                return NotFound($"Not Found: {ex.Message}");
+            }
         }
     }
 }

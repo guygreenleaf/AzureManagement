@@ -4,7 +4,6 @@ namespace AzureMgmt.AzureService
 {
     public interface IAzureService
     {
-         Task<List<BlobItem>> GetBlobs();
-
+        string GetMostRecentResume();
     }
 }
