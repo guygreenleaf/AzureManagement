@@ -47,27 +47,14 @@ namespace AzureMgmt.AzureService
 
         public string GetMostRecentResume()
         {
-            DateTimeOffset? lastModifiedFileTime = DateTime.MinValue;
-            string bName = string.Empty;
             try
             {
-                var res = blobContainerClient.GetBlobs();
-
-                foreach (var blob in res)
-                {
-                    if (blob.Properties.LastModified > lastModifiedFileTime)
-                    {
-                        bName = blob.Name;
-                        lastModifiedFileTime = blob.Properties.LastModified;
-                    }
-                }
+                return string.Concat(baseBlobUri, blobContainerClient.GetBlobs().OrderBy(e => e.Properties.LastModified).Last().Name);
             }
             catch (Exception e)
             {
                 throw new ApplicationException(e.Message);
             }
-
-            return string.Concat(baseBlobUri, bName);
         }
     }
 }
