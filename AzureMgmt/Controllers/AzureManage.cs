@@ -1,5 +1,6 @@
 ﻿using AzureMgmt.AzureService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 
 namespace AzureMgmt.Controllers
 {
@@ -19,9 +20,7 @@ namespace AzureMgmt.Controllers
         {
             try
             {
-                var linkPostFix = azureService.GetMostRecentResume();
-                
-                return linkPostFix is not null ? Ok(linkPostFix) : NotFound("Resume Not Found");
+                return Ok(azureService.GetMostRecentResume() ?? "Resume Not Found");
             }
             catch (Exception ex)
             {

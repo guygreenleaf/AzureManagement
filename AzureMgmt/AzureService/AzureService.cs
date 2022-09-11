@@ -5,25 +5,25 @@ namespace AzureMgmt.AzureService
 {
     public class AzureService : IAzureService
     {
-        private readonly string? CONNECTION_STRING;
+        private readonly string? connectionString;
         private readonly BlobServiceClient blobServiceClient;
         private readonly BlobContainerClient blobContainerClient;
         private readonly string? baseBlobUri;
 
 #if DEBUG
-        IJSONUtils jsonUtils;
+        private readonly IJSONUtils jsonUtils;
         public AzureService(IJSONUtils utils)
         {
             jsonUtils = utils;
 
-            CONNECTION_STRING = jsonUtils.GetJSONItems().AzureConnectionString;
+            connectionString = jsonUtils.GetJSONItems().AzureConnectionString;
 
-            if (string.IsNullOrEmpty(CONNECTION_STRING)) throw new AccessViolationException("Connection string not found.");
+            if (string.IsNullOrEmpty(connectionString)) throw new AccessViolationException("Connection string not found.");
 
-            blobServiceClient = new BlobServiceClient(CONNECTION_STRING);
+            blobServiceClient = new BlobServiceClient(connectionString);
             if (blobServiceClient is null) throw new MemberAccessException("Blob Services not found.");
 
-            blobContainerClient = new BlobContainerClient(CONNECTION_STRING, jsonUtils.GetJSONItems().ContainerName);
+            blobContainerClient = new BlobContainerClient(connectionString, jsonUtils.GetJSONItems().ContainerName);
             if (blobContainerClient is null) throw new MemberAccessException("Blob Container Services not found.");
             
             baseBlobUri = jsonUtils.GetJSONItems().BlobBaseURI;
@@ -32,13 +32,13 @@ namespace AzureMgmt.AzureService
 #else
         public AzureService()
         {
-            CONNECTION_STRING = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? String.Empty; 
-            if (string.IsNullOrEmpty(CONNECTION_STRING)) throw new AccessViolationException("Connection string not found."); 
+            connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? String.Empty; 
+            if (string.IsNullOrEmpty(connectionString)) throw new AccessViolationException("Connection string not found."); 
 
-            blobServiceClient = new BlobServiceClient(CONNECTION_STRING);
+            blobServiceClient = new BlobServiceClient(connectionString);
             if (blobServiceClient is null) throw new MemberAccessException("Blob Services not found.");
 
-            blobContainerClient = new BlobContainerClient(CONNECTION_STRING, Environment.GetEnvironmentVariable("CONTAINER_NAME"));
+            blobContainerClient = new BlobContainerClient(connectionString, Environment.GetEnvironmentVariable("CONTAINER_NAME"));
             if (blobContainerClient is null) throw new MemberAccessException("Blob Container Services not found.");
             
             baseBlobUri = Environment.GetEnvironmentVariable("BASE_BLOB_URI");
@@ -49,7 +49,7 @@ namespace AzureMgmt.AzureService
         {
             try
             {
-                return string.Concat(baseBlobUri, blobContainerClient.GetBlobs().OrderBy(e => e.Properties.LastModified).Last().Name);
+                return string.Concat(baseBlobUri, blobContainerClient.GetBlobs().OrderBy(e => e.Properties.LastModified).LastOrDefault()?.Name);
             }
             catch (Exception e)
             {
